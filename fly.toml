@@ -1,0 +1,25 @@
+# Fly.io — configuração do app
+# Gere com: fly launch --no-deploy   ou edite manualmente
+app = "jobs-bot"
+primary_region = "gru"  # São Paulo — menor latência pro Telegram
+
+[build]
+  dockerfile = "Dockerfile"
+
+[env]
+  # Intervalo entre buscas — 12h é um bom equilíbrio
+  SEARCH_INTERVAL_HOURS = "12"
+  WEEKDAYS_ONLY = "true"
+  MIN_MATCH_SCORE = "0.15"
+  ENABLED_SOURCES = "remotive,github,programathor,remoteok,himalayas,weworkremotely,wellfound,geekhunter"
+
+[[vm]]
+  # Precisa de 512MB para o modelo de embeddings (~80MB) + runtime
+  size = "shared-cpu-1x"
+  memory = "512mb"
+
+# Volume persistente — SQLite sobrevive a deploys
+# Crie com: flyctl volumes create jobs_bot_data --size 1
+[[mounts]]
+  source = "jobs_bot_data"
+  destination = "/app/data"
