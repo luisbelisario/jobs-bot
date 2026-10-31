@@ -36,7 +36,7 @@ ENABLED_SOURCES = [
     s.strip()
     for s in os.getenv(
         "ENABLED_SOURCES",
-        "remotive,github,programathor,remoteok,himalayas,weworkremotely,wellfound,geekhunter"
+        "remoteok,lever,ifood"
     ).split(",")
     if s.strip()
 ]

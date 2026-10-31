@@ -38,18 +38,27 @@ class HimalayasScraper(BaseScraper):
                 for job in jobs:
                     if not isinstance(job, dict):
                         continue
-                    job_id = str(job.get("id", hash(str(job))))
+                    job_id = str(job.get("guid", job.get("id", hash(str(job)))))
                     if job_id in seen_ids:
                         continue
                     seen_ids.add(job_id)
 
+                    # Monta URL — applicationLink é o campo correto
+                    app_url = job.get("applicationLink", "") or job.get("url", "") or ""
+                    if not app_url:
+                        slug = job.get("guid", "") or job.get("slug", "") or job.get("id", "")
+                        if slug:
+                            app_url = f"https://himalayas.app/jobs/{slug}"
+
+                    company = job.get("companyName", job.get("company", ""))
+
                     all_jobs.append({
                         "id": f"himalayas-{job_id}",
                         "title": job.get("title", ""),
-                        "company": job.get("company_name", job.get("company", "")),
-                        "location": job.get("location", "Remoto"),
-                        "url": job.get("application_url", job.get("url", "")),
-                        "description": (job.get("description", "") or "")[:2000],
+                        "company": company,
+                        "location": job.get("locationRestrictions", "Remoto"),
+                        "url": app_url,
+                        "description": (job.get("description", "") or job.get("excerpt", ""))[:2000],
                         "source": "himalayas",
                     })
             except Exception as e:

@@ -60,6 +60,18 @@ async def compute_match_score(
     final = semantic * 0.85 + seniority
     return round(min(final, 1.0), 2)
 
+    # Penalidade para vagas de altíssima senioridade (architect, principal, staff, 8+ years)
+    over_seniority_kw = {
+        "architect", "principal engineer", "staff engineer", "director",
+        "head of engineering", "vp of", "8+ years", "10+ years",
+        "15+ years", "distinguished", "fellow",
+    }
+    text_lower = (job_title + " " + job_description).lower()
+    if any(kw in text_lower for kw in over_seniority_kw):
+        final *= 0.80  # reduz 20%
+
+    return round(min(final, 1.0), 2)
+
 
 async def filter_and_rank(
     jobs: list[dict],
@@ -70,12 +82,37 @@ async def filter_and_rank(
 ) -> list[dict]:
     """
     Filtra e ordena vagas por relevância semântica.
+    Exige que a vaga mencione pelo menos 1 skill técnica explícita.
     """
     scored = []
+    skills_lower = {s.lower() for s in user_skills}
+
     for job in jobs:
+        title = job.get("title", "")
+        desc = job.get("description", "")
+
+        # Filtro híbrido: precisa ter pelo menos 1 skill CORE (não periférica como "api" ou "git")
+        text = f"{title} {desc}".lower()
+        words = set(re.findall(r"\b\w+\b", text))
+        core_skills = {"java", "python", "aws", "kubernetes", "terraform", "kafka",
+                       "docker", "spring", "quarkus", "golang", "kotlin"}
+        has_core_skill = bool(skills_lower & words & core_skills)
+        if not has_core_skill:
+            continue
+
+        # Exclui vagas fullstack/frontend/data pelo título
+        title_lower = title.lower()
+        excluded = {
+            "fullstack", "full-stack", "frontend", "front-end",
+            "react developer", "angular developer", "vue developer",
+            "data engineer", "data architect", "data scientist", "data analyst",
+        }
+        if any(ex in title_lower for ex in excluded):
+            continue
+
         score = await compute_match_score(
-            job_title=job.get("title", ""),
-            job_description=job.get("description", ""),
+            job_title=title,
+            job_description=desc,
             user_skills=user_skills,
             user_desired_roles=user_desired_roles,
         )

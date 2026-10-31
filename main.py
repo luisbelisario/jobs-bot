@@ -26,14 +26,12 @@ from handlers.commands import (
     set_location,
 )
 from handlers.resume import upload_resume, handle_document
-from scheduler import setup_scheduler
 
 
 async def post_init(app: Application) -> None:
-    """Inicializa o banco, scheduler e pré-carrega modelo de IA."""
+    """Inicializa o banco e pré-carrega modelo de IA."""
     await init_db()
     print("✅ Banco de dados inicializado.")
-    setup_scheduler(app)
 
     # Pré-carrega o modelo de embeddings (download único ~80MB)
     try:

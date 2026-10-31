@@ -24,10 +24,17 @@ def _get_model() -> SentenceTransformer:
 async def profile_embedding(skills: str, roles: str, resume_snippet: str = "") -> np.ndarray:
     """
     Gera o embedding do perfil do usuário.
-    Combina skills + roles + trecho do currículo.
+    Inclui contexto de senioridade para guiar o matching.
     """
     model = _get_model()
-    text = f"Skills: {skills}. Roles: {roles}. {resume_snippet[:800]}"
+    # O contexto de senioridade ajuda a IA a distinguir vagas adequadas ao nível
+    seniority_context = (
+        "Senior level for Java Backend roles. "
+        "Mid level or Pleno only for DevOps Platform Infrastructure Cloud roles — NOT senior DevOps. "
+        "4 years of professional experience, not 8, not 10. "
+        "Not architect, not principal, not staff, not director, not VP, not lead."
+    )
+    text = f"{seniority_context} Skills: {skills}. Roles: {roles}. {resume_snippet[:600]}"
     embedding = model.encode(text, convert_to_numpy=True)
     return embedding
 

@@ -11,7 +11,7 @@ primary_region = "gru"  # São Paulo — menor latência pro Telegram
   SEARCH_INTERVAL_HOURS = "12"
   WEEKDAYS_ONLY = "true"
   MIN_MATCH_SCORE = "0.15"
-  ENABLED_SOURCES = "remotive,github,programathor,remoteok,himalayas,weworkremotely,wellfound,geekhunter"
+  ENABLED_SOURCES = "remoteok,himalayas,lever,ifood"
 
 [[vm]]
   # Precisa de 512MB para o modelo de embeddings (~80MB) + runtime

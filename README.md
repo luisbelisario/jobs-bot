@@ -6,7 +6,7 @@ Envie seu currículo, e o bot busca vagas alinhadas ao seu perfil em múltiplas 
 ## 🚀 Funcionalidades
 
 - 📎 **Upload de currículo**: PDF, DOCX ou TXT — extração automática de skills
-- 🔍 **Busca multi-fonte**: 8 fontes — Remotive, Remote OK, Himalayas, We Work Remotely, Wellfound, GitHub, Programathor, GeekHunter
+- 🔍 **Busca multi-fonte**: Himalayas, Remote OK + Greenhouse/Lever/Gupy (sites de empresas)
 - 🎯 **Matching inteligente**: cruza skills, cargo desejado e senioridade
 - ⏰ **Agendamento 24/7**: busca automática a cada X horas e notifica vagas novas
 - 💾 **Persistência**: SQLite — não repete vagas já notificadas

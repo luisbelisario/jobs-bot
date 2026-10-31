@@ -1,23 +1,13 @@
 """Scrapers de vagas — um módulo por fonte."""
-from scrapers.remotive import RemotiveScraper
-from scrapers.github_jobs import GitHubJobsScraper
-from scrapers.programathor import ProgramathorScraper
 from scrapers.remoteok import RemoteOKScraper
-from scrapers.himalayas import HimalayasScraper
-from scrapers.weworkremotely import WeWorkRemotelyScraper
-from scrapers.wellfound import WellfoundScraper
-from scrapers.geekhunter import GeekHunterScraper
+from scrapers.lever import LeverScraper
+from scrapers.ifood import IfoodScraper
 
 # Registro de scrapers disponíveis
 SCRAPERS = {
-    "remotive": RemotiveScraper(),
-    "github": GitHubJobsScraper(),
-    "programathor": ProgramathorScraper(),
     "remoteok": RemoteOKScraper(),
-    "himalayas": HimalayasScraper(),
-    "weworkremotely": WeWorkRemotelyScraper(),
-    "wellfound": WellfoundScraper(),
-    "geekhunter": GeekHunterScraper(),
+    "lever": LeverScraper(),
+    "ifood": IfoodScraper(),
 }
 
 
@@ -40,7 +30,6 @@ async def search_all_sources(
             jobs = await scraper.search(skills=skills, roles=roles, locations=locations)
             results[source_name] = jobs
         except Exception as e:
-            # Log silencioso — não interrompe outras fontes por falha de uma
             print(f"[{source_name}] Erro na busca: {e}")
             results[source_name] = []
     return results

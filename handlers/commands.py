@@ -93,6 +93,11 @@ async def search_now(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None
 
     results = await search_all_sources(ENABLED_SOURCES, skills, roles, locations)
 
+    # Log por fonte
+    source_summary = []
+    for src, jobs in results.items():
+        source_summary.append(f"{src}: {len(jobs)}")
+
     total_found = sum(len(jobs) for jobs in results.values())
     if total_found == 0:
         await update.message.reply_text(
@@ -105,15 +110,22 @@ async def search_now(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None
     for source, jobs in results.items():
         all_jobs.extend(jobs)
 
-    ranked = await filter_and_rank(all_jobs, skills, roles, MIN_MATCH_SCORE, max_results=10)
+    ranked = await filter_and_rank(all_jobs, skills, roles, MIN_MATCH_SCORE, max_results=25)
 
     if not ranked:
         await update.message.reply_text(
-            f"📊 Encontrei {total_found} vagas, mas nenhuma com match suficiente "
+            f"📊 {total_found} vagas encontradas ({', '.join(source_summary)}), "
+            f"mas nenhuma com match suficiente "
             f"(mínimo {int(MIN_MATCH_SCORE * 100)}%).\n"
             "Tente ajustar com /config ou enriquecer seu currículo."
         )
         return
+
+    # Mostra resumo
+    await update.message.reply_text(
+        f"📊 {total_found} vagas encontradas ({', '.join(source_summary)}), "
+        f"{len(ranked)} com match ≥ {int(MIN_MATCH_SCORE * 100)}%:"
+    )
 
     # Formata e envia resultados
     for job in ranked:
